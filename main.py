@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import List
 from google import genai
 from google.genai import types
+import traceback
 
 app = FastAPI()
 
@@ -18,7 +19,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializa o cliente oficial da nova SDK do Gemini
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 class DespesaResponse(BaseModel):
@@ -54,7 +54,6 @@ async def processar_recibos(files: List[UploadFile] = File(...)):
         )
         
         try:
-            # Envia o arquivo e o prompt usando a nova estrutura do cliente Gemini
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=[
@@ -76,7 +75,9 @@ async def processar_recibos(files: List[UploadFile] = File(...)):
                 "valor": float(dados.get("valor", 0.0))
             })
         except Exception as e:
-            print(f"Erro detalhado no arquivo {file.filename}: {str(e)}")
+            # Imprime o erro completo no console/logs do Render para diagnóstico
+            print("=== ERRO DETALHADO ===")
+            traceback.print_exc()
             resultados.append({
                 "arquivo": file.filename,
                 "data_hora": "Erro na leitura",
