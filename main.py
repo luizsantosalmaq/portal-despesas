@@ -28,7 +28,7 @@ class DespesaResponse(BaseModel):
     valor: float
 
 @app.post("/processar-recibos/", response_model=List[DespesaResponse])
-async def processar_recibos(files: List[UploadFile] = File(..., description="Selecione os arquivos de recibo")):
+async def processar-recibos(files: List[UploadFile] = File(...)):
     if len(files) > 50:
         raise HTTPException(status_code=400, detail="O limite máximo é de 50 arquivos por vez.")
     
